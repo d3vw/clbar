@@ -1,0 +1,18 @@
+# Clash Node Switcher Configuration
+# This file will be automatically created at ~/.config/clbar/config.toml on first run
+
+# Clash API endpoint URL
+clash_api_url = "http://127.0.0.1:9090"
+
+# Clash API secret (leave empty if no authentication required)
+# If your Clash config has: secret: "your-secret"
+# Then set: clash_secret = "your-secret"
+clash_secret = ""
+
+# Proxy groups to display in tray menu
+# Empty list = show all Selector/URLTest groups
+# Specify groups to filter, e.g.: ["proxy", "youtube", "google"]
+proxy_groups = []
+
+# Auto-refresh interval in seconds
+refresh_interval_secs = 30

@@ -1,0 +1,13 @@
+[Unit]
+Description=Clash Node Switcher Tray App
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.cargo/bin/clbar
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

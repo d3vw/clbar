@@ -46,12 +46,21 @@ impl TrayManager {
                 for node_name in nodes {
                     let is_current = group.now.as_ref() == Some(node_name);
 
-                    // Build menu text with delay if available
+                    // Build menu text with delay and color indicator if available
                     let menu_text = if let Some(&delay) = node_delays.get(node_name) {
-                        if is_current {
-                            format!("✓ {} ({}ms)", node_name, delay)
+                        // Determine color indicator based on delay
+                        let color_indicator = if delay < 150 {
+                            "🟢" // Green for < 150ms
+                        } else if delay < 400 {
+                            "🟡" // Yellow for 150-400ms
                         } else {
-                            format!("{} ({}ms)", node_name, delay)
+                            "🔴" // Red for >= 400ms
+                        };
+
+                        if is_current {
+                            format!("✓ {} {} {}ms", node_name, color_indicator, delay)
+                        } else {
+                            format!("{} {} {}ms", node_name, color_indicator, delay)
                         }
                     } else {
                         if is_current {

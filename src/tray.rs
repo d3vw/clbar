@@ -139,23 +139,24 @@ impl TrayManager {
     }
 
     fn create_default_icon() -> Result<tray_icon::Icon> {
-        // Create a simple 32x32 RGBA icon (grey)
-        let rgba = vec![128u8, 128, 128, 255].repeat(32 * 32);
-        tray_icon::Icon::from_rgba(rgba, 32, 32)
-            .context("Failed to create default icon")
+        Self::load_icon_from_bytes(include_bytes!("../assets/icon.png"))
     }
 
     fn create_connected_icon() -> Result<tray_icon::Icon> {
-        // Create a 32x32 RGBA icon (green)
-        let rgba = vec![0u8, 255, 0, 255].repeat(32 * 32);
-        tray_icon::Icon::from_rgba(rgba, 32, 32)
-            .context("Failed to create connected icon")
+        Self::load_icon_from_bytes(include_bytes!("../assets/icon.png"))
     }
 
     fn create_disconnected_icon() -> Result<tray_icon::Icon> {
-        // Create a 32x32 RGBA icon (red)
-        let rgba = vec![255u8, 0, 0, 255].repeat(32 * 32);
-        tray_icon::Icon::from_rgba(rgba, 32, 32)
-            .context("Failed to create disconnected icon")
+        Self::load_icon_from_bytes(include_bytes!("../assets/icon.png"))
+    }
+
+    fn load_icon_from_bytes(bytes: &[u8]) -> Result<tray_icon::Icon> {
+        let img = image::load_from_memory(bytes)
+            .context("Failed to load icon from bytes")?
+            .to_rgba8();
+        let (width, height) = img.dimensions();
+        let rgba = img.into_raw();
+        tray_icon::Icon::from_rgba(rgba, width, height)
+            .context("Failed to create icon from RGBA data")
     }
 }

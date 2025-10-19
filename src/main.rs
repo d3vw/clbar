@@ -44,7 +44,7 @@ async fn main() -> Result<()> {
     tray_manager.update_menu(&proxy_groups)?;
     tray_manager.set_icon_connected()?;
 
-    println!("Tray icon initialized");
+    println!("Tray icon initialized with {} proxy groups", proxy_groups.len());
 
     // Event loop
     let mut last_refresh = std::time::Instant::now();

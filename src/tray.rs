@@ -38,9 +38,11 @@ impl TrayManager {
 
         // Add proxy groups as submenus
         for (group_name, group) in proxy_groups {
-            let submenu = Submenu::new(group_name, true);
-
             if let Some(ref nodes) = group.all {
+                // Create submenu for this group
+                let submenu = Submenu::new(group_name, true);
+
+                // Add all nodes to the submenu
                 for node_name in nodes {
                     let is_current = group.now.as_ref() == Some(node_name);
                     let menu_text = if is_current {
@@ -57,9 +59,10 @@ impl TrayManager {
 
                     submenu.append(&menu_item).ok();
                 }
-            }
 
-            new_menu.append(&submenu).ok();
+                // Append the submenu to the main menu
+                new_menu.append(&submenu).ok();
+            }
         }
 
         // Add separator

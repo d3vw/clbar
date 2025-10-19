@@ -25,7 +25,7 @@ impl ClashApi {
         })
     }
 
-    pub async fn get_proxies(&self) -> Result<HashMap<String, ProxyGroup>> {
+    pub async fn get_proxies(&self) -> Result<(HashMap<String, ProxyGroup>, HashMap<String, u32>)> {
         let url = format!("{}/proxies", self.base_url);
 
         let mut request = self.client.get(&url);
@@ -49,6 +49,16 @@ impl ClashApi {
             .context("Failed to parse proxies response")?;
 
         let mut proxy_groups = HashMap::new();
+        let mut node_delays = HashMap::new();
+
+        // Extract delay information from all proxies
+        for (name, proxy) in &proxies_response.proxies {
+            if let Some(ref history) = proxy.history {
+                if let Some(latest) = history.last() {
+                    node_delays.insert(name.clone(), latest.delay);
+                }
+            }
+        }
 
         // Filter for proxy groups (Selector, URLTest, Fallback)
         for (name, proxy) in proxies_response.proxies {
@@ -64,7 +74,7 @@ impl ClashApi {
             }
         }
 
-        Ok(proxy_groups)
+        Ok((proxy_groups, node_delays))
     }
 
     pub async fn switch_node(&self, group_name: &str, node_name: &str) -> Result<()> {

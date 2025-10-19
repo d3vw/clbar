@@ -40,8 +40,8 @@ async fn main() -> Result<()> {
     let mut tray_manager = TrayManager::new().context("Failed to create tray manager")?;
 
     // Initial proxy groups fetch
-    let mut proxy_groups = fetch_proxy_groups(&clash_api, &config).await?;
-    tray_manager.update_menu(&proxy_groups)?;
+    let (mut proxy_groups, mut node_delays) = fetch_proxy_groups(&clash_api, &config).await?;
+    tray_manager.update_menu(&proxy_groups, &node_delays)?;
     tray_manager.set_icon_connected()?;
 
     println!("Tray icon initialized with {} proxy groups", proxy_groups.len());
@@ -58,17 +58,19 @@ async fn main() -> Result<()> {
                     println!("Switching {} to {}", group, node);
                     handle_switch_node(&clash_api, &mut tray_manager, &group, &node).await;
                     // Refresh proxy groups after switch
-                    if let Ok(groups) = fetch_proxy_groups(&clash_api, &config).await {
+                    if let Ok((groups, delays)) = fetch_proxy_groups(&clash_api, &config).await {
                         proxy_groups = groups;
-                        tray_manager.update_menu(&proxy_groups)?;
+                        node_delays = delays;
+                        tray_manager.update_menu(&proxy_groups, &node_delays)?;
                     }
                 }
                 TrayEvent::Refresh => {
                     println!("Refreshing proxy groups...");
                     match fetch_proxy_groups(&clash_api, &config).await {
-                        Ok(groups) => {
+                        Ok((groups, delays)) => {
                             proxy_groups = groups;
-                            tray_manager.update_menu(&proxy_groups)?;
+                            node_delays = delays;
+                            tray_manager.update_menu(&proxy_groups, &node_delays)?;
                             tray_manager.set_icon_connected()?;
                             notify_success("Refreshed", "Proxy groups updated successfully");
                         }
@@ -88,9 +90,10 @@ async fn main() -> Result<()> {
 
         // Auto-refresh proxy groups periodically
         if last_refresh.elapsed() >= refresh_interval {
-            if let Ok(groups) = fetch_proxy_groups(&clash_api, &config).await {
+            if let Ok((groups, delays)) = fetch_proxy_groups(&clash_api, &config).await {
                 proxy_groups = groups;
-                tray_manager.update_menu(&proxy_groups)?;
+                node_delays = delays;
+                tray_manager.update_menu(&proxy_groups, &node_delays)?;
                 tray_manager.set_icon_connected()?;
             } else {
                 tray_manager.set_icon_disconnected()?;
@@ -111,12 +114,12 @@ async fn main() -> Result<()> {
 async fn fetch_proxy_groups(
     clash_api: &ClashApi,
     config: &Config,
-) -> Result<HashMap<String, models::ProxyGroup>> {
-    let all_groups = clash_api.get_proxies().await?;
+) -> Result<(HashMap<String, models::ProxyGroup>, HashMap<String, u32>)> {
+    let (all_groups, node_delays) = clash_api.get_proxies().await?;
 
     // Filter to only configured groups if specified
     if config.proxy_groups.is_empty() {
-        return Ok(all_groups);
+        return Ok((all_groups, node_delays));
     }
 
     let filtered_groups: HashMap<String, models::ProxyGroup> = all_groups
@@ -124,7 +127,7 @@ async fn fetch_proxy_groups(
         .filter(|(name, _)| config.proxy_groups.contains(name))
         .collect();
 
-    Ok(filtered_groups)
+    Ok((filtered_groups, node_delays))
 }
 
 async fn handle_switch_node(

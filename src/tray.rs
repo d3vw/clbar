@@ -31,7 +31,7 @@ impl TrayManager {
         })
     }
 
-    pub fn update_menu(&mut self, proxy_groups: &HashMap<String, ProxyGroup>) -> Result<()> {
+    pub fn update_menu(&mut self, proxy_groups: &HashMap<String, ProxyGroup>, node_delays: &HashMap<String, u32>) -> Result<()> {
         // Clear existing menu ID map
         self.menu_id_map.clear();
         let new_menu = Menu::new();
@@ -45,10 +45,20 @@ impl TrayManager {
                 // Add all nodes to the submenu
                 for node_name in nodes {
                     let is_current = group.now.as_ref() == Some(node_name);
-                    let menu_text = if is_current {
-                        format!("✓ {}", node_name)
+
+                    // Build menu text with delay if available
+                    let menu_text = if let Some(&delay) = node_delays.get(node_name) {
+                        if is_current {
+                            format!("✓ {} ({}ms)", node_name, delay)
+                        } else {
+                            format!("{} ({}ms)", node_name, delay)
+                        }
                     } else {
-                        node_name.clone()
+                        if is_current {
+                            format!("✓ {}", node_name)
+                        } else {
+                            node_name.clone()
+                        }
                     };
 
                     let menu_item = MenuItem::new(menu_text, true, None);

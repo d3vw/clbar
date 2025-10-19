@@ -14,6 +14,9 @@ use tray::TrayManager;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Initialize GTK (required for tray-icon)
+    gtk::init().context("Failed to initialize GTK")?;
+
     // Load configuration
     let config = Config::load().context("Failed to load configuration")?;
 
@@ -93,6 +96,11 @@ async fn main() -> Result<()> {
                 tray_manager.set_icon_disconnected()?;
             }
             last_refresh = std::time::Instant::now();
+        }
+
+        // Process GTK events (non-blocking)
+        while gtk::events_pending() {
+            gtk::main_iteration();
         }
 
         // Small sleep to prevent busy loop

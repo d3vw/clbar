@@ -85,12 +85,24 @@ refresh_interval_secs = 30
 
 ### Starting the Application
 
+**Note**: If `clbar` command is not found, ensure `~/.cargo/bin` is in your PATH:
+```bash
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc  # for bash
+# or
+set -Ux fish_user_paths $HOME/.cargo/bin $fish_user_paths  # for fish
+```
+
 Run directly:
 ```bash
 clbar
 ```
 
-Or enable auto-start with systemd:
+Or use the full path:
+```bash
+~/.cargo/bin/clbar
+```
+
+Or enable auto-start with systemd (recommended):
 ```bash
 systemctl --user enable --now clbar.service
 ```

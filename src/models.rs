@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProxyGroup {
@@ -30,7 +30,7 @@ pub struct DelayHistory {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProxiesResponse {
-    pub proxies: HashMap<String, Proxy>,
+    pub proxies: IndexMap<String, Proxy>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

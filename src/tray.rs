@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use std::collections::HashMap;
+use indexmap::IndexMap;
 use tray_icon::menu::{Menu, MenuEvent, MenuItem, MenuId, PredefinedMenuItem, Submenu};
 use tray_icon::{TrayIcon, TrayIconBuilder};
 
@@ -31,7 +32,7 @@ impl TrayManager {
         })
     }
 
-    pub fn update_menu(&mut self, proxy_groups: &HashMap<String, ProxyGroup>, node_delays: &HashMap<String, u32>) -> Result<()> {
+    pub fn update_menu(&mut self, proxy_groups: &IndexMap<String, ProxyGroup>, node_delays: &IndexMap<String, u32>) -> Result<()> {
         // Clear existing menu ID map
         self.menu_id_map.clear();
         let new_menu = Menu::new();

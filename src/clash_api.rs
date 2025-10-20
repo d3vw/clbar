@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use reqwest::Client;
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use crate::config::Config;
 use crate::models::{ProxyGroup, ProxiesResponse, SwitchRequest};
@@ -25,7 +25,7 @@ impl ClashApi {
         })
     }
 
-    pub async fn get_proxies(&self) -> Result<(HashMap<String, ProxyGroup>, HashMap<String, u32>)> {
+    pub async fn get_proxies(&self) -> Result<(IndexMap<String, ProxyGroup>, IndexMap<String, u32>)> {
         let url = format!("{}/proxies", self.base_url);
 
         let mut request = self.client.get(&url);
@@ -48,8 +48,8 @@ impl ClashApi {
             .await
             .context("Failed to parse proxies response")?;
 
-        let mut proxy_groups = HashMap::new();
-        let mut node_delays = HashMap::new();
+        let mut proxy_groups = IndexMap::new();
+        let mut node_delays = IndexMap::new();
 
         // Extract delay information from all proxies
         for (name, proxy) in &proxies_response.proxies {

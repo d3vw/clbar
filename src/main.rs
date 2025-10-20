@@ -8,7 +8,7 @@ use clash_api::ClashApi;
 use config::Config;
 use models::TrayEvent;
 use notify_rust::Notification;
-use std::collections::HashMap;
+use indexmap::IndexMap;
 use std::time::Duration;
 use tray::TrayManager;
 
@@ -114,7 +114,7 @@ async fn main() -> Result<()> {
 async fn fetch_proxy_groups(
     clash_api: &ClashApi,
     config: &Config,
-) -> Result<(HashMap<String, models::ProxyGroup>, HashMap<String, u32>)> {
+) -> Result<(IndexMap<String, models::ProxyGroup>, IndexMap<String, u32>)> {
     let (all_groups, node_delays) = clash_api.get_proxies().await?;
 
     // Filter to only configured groups if specified
@@ -122,7 +122,7 @@ async fn fetch_proxy_groups(
         return Ok((all_groups, node_delays));
     }
 
-    let filtered_groups: HashMap<String, models::ProxyGroup> = all_groups
+    let filtered_groups: IndexMap<String, models::ProxyGroup> = all_groups
         .into_iter()
         .filter(|(name, _)| config.proxy_groups.contains(name))
         .collect();

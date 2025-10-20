@@ -123,4 +123,28 @@ impl ClashApi {
 
         Ok(())
     }
+
+    pub async fn trigger_delay_test(&self, group_name: &str, url: &str, timeout: u32) -> Result<()> {
+        let api_url = format!(
+            "{}/group/{}/delay?url={}&timeout={}",
+            self.base_url, group_name, url, timeout
+        );
+
+        let mut request = self.client.get(&api_url);
+
+        if !self.secret.is_empty() {
+            request = request.header("Authorization", format!("Bearer {}", self.secret));
+        }
+
+        let response = request
+            .send()
+            .await
+            .context("Failed to trigger delay test")?;
+
+        if !response.status().is_success() {
+            anyhow::bail!("Delay test returned error: {}", response.status());
+        }
+
+        Ok(())
+    }
 }

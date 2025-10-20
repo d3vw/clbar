@@ -16,6 +16,15 @@ pub struct Config {
 
     #[serde(default = "default_refresh_interval")]
     pub refresh_interval_secs: u64,
+
+    #[serde(default = "default_delay_test_group")]
+    pub delay_test_group: String,
+
+    #[serde(default = "default_delay_test_url")]
+    pub delay_test_url: String,
+
+    #[serde(default = "default_delay_test_timeout")]
+    pub delay_test_timeout: u32,
 }
 
 fn default_clash_api_url() -> String {
@@ -34,6 +43,18 @@ fn default_refresh_interval() -> u64 {
     30
 }
 
+fn default_delay_test_group() -> String {
+    "all".to_string()
+}
+
+fn default_delay_test_url() -> String {
+    "https://www.gstatic.com/generate_204".to_string()
+}
+
+fn default_delay_test_timeout() -> u32 {
+    5000
+}
+
 impl Default for Config {
     fn default() -> Self {
         Config {
@@ -41,6 +62,9 @@ impl Default for Config {
             clash_secret: default_clash_secret(),
             proxy_groups: default_proxy_groups(),
             refresh_interval_secs: default_refresh_interval(),
+            delay_test_group: default_delay_test_group(),
+            delay_test_url: default_delay_test_url(),
+            delay_test_timeout: default_delay_test_timeout(),
         }
     }
 }

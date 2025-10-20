@@ -66,6 +66,18 @@ async fn main() -> Result<()> {
                 }
                 TrayEvent::Refresh => {
                     println!("Refreshing proxy groups...");
+
+                    // Trigger delay test (ignore errors)
+                    if let Err(e) = clash_api.trigger_delay_test(
+                        &config.delay_test_group,
+                        &config.delay_test_url,
+                        config.delay_test_timeout
+                    ).await {
+                        eprintln!("Delay test failed (continuing anyway): {}", e);
+                    } else {
+                        println!("Delay test triggered for group: {}", config.delay_test_group);
+                    }
+
                     match fetch_proxy_groups(&clash_api, &config).await {
                         Ok((groups, delays)) => {
                             proxy_groups = groups;
@@ -90,6 +102,15 @@ async fn main() -> Result<()> {
 
         // Auto-refresh proxy groups periodically
         if last_refresh.elapsed() >= refresh_interval {
+            // Trigger delay test (ignore errors)
+            if let Err(e) = clash_api.trigger_delay_test(
+                &config.delay_test_group,
+                &config.delay_test_url,
+                config.delay_test_timeout
+            ).await {
+                eprintln!("Auto-refresh delay test failed (continuing anyway): {}", e);
+            }
+
             if let Ok((groups, delays)) = fetch_proxy_groups(&clash_api, &config).await {
                 proxy_groups = groups;
                 node_delays = delays;

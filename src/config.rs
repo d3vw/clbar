@@ -25,6 +25,12 @@ pub struct Config {
 
     #[serde(default = "default_delay_test_timeout")]
     pub delay_test_timeout: u32,
+
+    #[serde(default = "default_delay_green_threshold")]
+    pub delay_green_threshold: u32,
+
+    #[serde(default = "default_delay_yellow_threshold")]
+    pub delay_yellow_threshold: u32,
 }
 
 fn default_clash_api_url() -> String {
@@ -55,6 +61,14 @@ fn default_delay_test_timeout() -> u32 {
     5000
 }
 
+fn default_delay_green_threshold() -> u32 {
+    150
+}
+
+fn default_delay_yellow_threshold() -> u32 {
+    400
+}
+
 impl Default for Config {
     fn default() -> Self {
         Config {
@@ -65,6 +79,8 @@ impl Default for Config {
             delay_test_group: default_delay_test_group(),
             delay_test_url: default_delay_test_url(),
             delay_test_timeout: default_delay_test_timeout(),
+            delay_green_threshold: default_delay_green_threshold(),
+            delay_yellow_threshold: default_delay_yellow_threshold(),
         }
     }
 }

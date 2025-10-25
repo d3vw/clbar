@@ -32,7 +32,7 @@ impl TrayManager {
         })
     }
 
-    pub fn update_menu(&mut self, proxy_groups: &IndexMap<String, ProxyGroup>, node_delays: &IndexMap<String, u32>) -> Result<()> {
+    pub fn update_menu(&mut self, proxy_groups: &IndexMap<String, ProxyGroup>, node_delays: &IndexMap<String, u32>, green_threshold: u32, yellow_threshold: u32) -> Result<()> {
         // Clear existing menu ID map
         self.menu_id_map.clear();
         let new_menu = Menu::new();
@@ -50,12 +50,12 @@ impl TrayManager {
                     // Build menu text with delay and color indicator if available
                     let menu_text = if let Some(&delay) = node_delays.get(node_name) {
                         // Determine color indicator based on delay
-                        let color_indicator = if delay < 150 {
-                            "🟢" // Green for < 150ms
-                        } else if delay < 400 {
-                            "🟡" // Yellow for 150-400ms
+                        let color_indicator = if delay < green_threshold {
+                            "🟢" // Green
+                        } else if delay < yellow_threshold {
+                            "🟡" // Yellow
                         } else {
-                            "🔴" // Red for >= 400ms
+                            "🔴" // Red
                         };
 
                         if is_current {

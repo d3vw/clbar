@@ -16,3 +16,10 @@ proxy_groups = []
 
 # Auto-refresh interval in seconds
 refresh_interval_secs = 30
+
+# Delay color-coding thresholds (in milliseconds)
+# Green indicator: delay < delay_green_threshold
+# Yellow indicator: delay_green_threshold <= delay < delay_yellow_threshold
+# Red indicator: delay >= delay_yellow_threshold
+delay_green_threshold = 150
+delay_yellow_threshold = 400

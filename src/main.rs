@@ -41,7 +41,7 @@ async fn main() -> Result<()> {
 
     // Initial proxy groups fetch
     let (mut proxy_groups, mut node_delays) = fetch_proxy_groups(&clash_api, &config).await?;
-    tray_manager.update_menu(&proxy_groups, &node_delays)?;
+    tray_manager.update_menu(&proxy_groups, &node_delays, config.delay_green_threshold, config.delay_yellow_threshold)?;
     tray_manager.set_icon_connected()?;
 
     println!("Tray icon initialized with {} proxy groups", proxy_groups.len());
@@ -61,7 +61,7 @@ async fn main() -> Result<()> {
                     if let Ok((groups, delays)) = fetch_proxy_groups(&clash_api, &config).await {
                         proxy_groups = groups;
                         node_delays = delays;
-                        tray_manager.update_menu(&proxy_groups, &node_delays)?;
+                        tray_manager.update_menu(&proxy_groups, &node_delays, config.delay_green_threshold, config.delay_yellow_threshold)?;
                     }
                 }
                 TrayEvent::Refresh => {
@@ -82,7 +82,7 @@ async fn main() -> Result<()> {
                         Ok((groups, delays)) => {
                             proxy_groups = groups;
                             node_delays = delays;
-                            tray_manager.update_menu(&proxy_groups, &node_delays)?;
+                            tray_manager.update_menu(&proxy_groups, &node_delays, config.delay_green_threshold, config.delay_yellow_threshold)?;
                             tray_manager.set_icon_connected()?;
                             notify_success("Refreshed", "Proxy groups updated successfully");
                         }
@@ -114,7 +114,7 @@ async fn main() -> Result<()> {
             if let Ok((groups, delays)) = fetch_proxy_groups(&clash_api, &config).await {
                 proxy_groups = groups;
                 node_delays = delays;
-                tray_manager.update_menu(&proxy_groups, &node_delays)?;
+                tray_manager.update_menu(&proxy_groups, &node_delays, config.delay_green_threshold, config.delay_yellow_threshold)?;
                 tray_manager.set_icon_connected()?;
             } else {
                 tray_manager.set_icon_disconnected()?;
